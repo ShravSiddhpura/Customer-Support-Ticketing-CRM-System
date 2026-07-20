@@ -78,6 +78,13 @@ def update_ticket(ticket_id: str, update_data: schemas.TicketUpdate, db: Session
         "updated_at": db_ticket.updated_at
     }
 
+@app.post("/api/tickets/{ticket_id}/notes", response_model=schemas.NoteResponse)
+def add_ticket_note(ticket_id: str, note: schemas.NoteCreate, db: Session = Depends(get_db)):
+    db_note = crud.create_note(db=db, ticket_id=ticket_id, note=note)
+    if db_note is None:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    return db_note
+
 @app.post("/api/tickets/{ticket_id}/suggest-priority")
 def suggest_ticket_priority(ticket_id: str, db: Session = Depends(get_db)):
     """

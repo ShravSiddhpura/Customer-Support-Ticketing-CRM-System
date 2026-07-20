@@ -2,13 +2,21 @@ const API_URL = '/api/tickets';
 let currentTicketId = null; 
 
 async function fetchTickets() {
+    // Safely capture the search input on every keystroke
+    const searchElement = document.getElementById('searchInput');
+    const searchQuery = searchElement ? searchElement.value.trim() : '';
+    
     const statusFilter = document.getElementById('statusFilter').value;
     const sortFilter = document.getElementById('sortFilter').value; 
     
     let url = API_URL;
     const params = [];
+    
+    // Add search query to URL if it exists (even if it's 1 character)
+    if (searchQuery) params.push(`search=${encodeURIComponent(searchQuery)}`);
     if (statusFilter) params.push(`status=${encodeURIComponent(statusFilter)}`);
     if (sortFilter) params.push(`sort_by=${encodeURIComponent(sortFilter)}`); 
+    
     if (params.length > 0) url += '?' + params.join('&');
 
     try {
@@ -133,6 +141,26 @@ async function openViewModal(ticket_id) {
         document.getElementById('v_status').value = ticket.status;
         document.getElementById('v_priority').value = ticket.priority || 'Unassigned';
 
+        // Render the notes array dynamically
+        const notesContainer = document.getElementById('v_notes_list');
+        notesContainer.innerHTML = '';
+        
+        if (ticket.notes && ticket.notes.length > 0) {
+            ticket.notes.forEach(note => {
+                const noteDate = new Date(note.created_at).toLocaleString();
+                notesContainer.innerHTML += `
+                    <div class="p-3 bg-white/40 border border-[#6a5db8]/10 rounded-xl shadow-sm">
+                        <p class="text-sm text-gray-800">${note.note_text}</p>
+                        <span class="text-[10px] text-gray-500 mt-1 block">${noteDate}</span>
+                    </div>
+                `;
+            });
+            // Automatically scroll to the bottom to see the newest note
+            notesContainer.scrollTop = notesContainer.scrollHeight;
+        } else {
+            notesContainer.innerHTML = `<p class="text-sm text-gray-400 italic px-2">No internal notes added yet.</p>`;
+        }
+
         document.getElementById('viewModal').classList.remove('hidden');
     } catch (error) {
         console.error("Error fetching details:", error);
@@ -160,5 +188,29 @@ async function updateTicket() {
         }
     } catch (error) {
         console.error("Error updating:", error);
+    }
+}
+
+/* --- NOTES LOGIC --- */
+async function addNote() {
+    const input = document.getElementById('new_note_input');
+    const text = input.value.trim();
+    if (!text) return; // Prevent empty notes
+
+    try {
+        const response = await fetch(`${API_URL}/${currentTicketId}/notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ note_text: text })
+        });
+        
+        if (response.ok) {
+            input.value = ''; // Clear input field
+            openViewModal(currentTicketId); // Refresh modal to display the newly added note
+        } else {
+            console.error("Failed to add note");
+        }
+    } catch (error) {
+        console.error("Error adding note:", error);
     }
 }

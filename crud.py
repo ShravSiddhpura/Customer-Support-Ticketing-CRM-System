@@ -91,3 +91,16 @@ def update_ticket(db: Session, ticket_id: str, update_data: schemas.TicketUpdate
     db.refresh(db_ticket)
     return db_ticket 
 
+def create_note(db: Session, ticket_id: str, note: schemas.NoteCreate):
+    db_ticket = get_ticket_by_ticket_id(db, ticket_id)
+    if not db_ticket:
+        return None
+    
+    new_note = models.Note(
+        ticket_id=db_ticket.id,
+        note_text=note.note_text
+    )
+    db.add(new_note)
+    db.commit()
+    db.refresh(new_note)
+    return new_note

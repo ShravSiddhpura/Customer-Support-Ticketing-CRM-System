@@ -1,6 +1,6 @@
 #This defines the actual tables in the SQLite database.
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey,text
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime, timezone
