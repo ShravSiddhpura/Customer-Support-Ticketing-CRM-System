@@ -3,7 +3,8 @@
 A modern, full-stack Customer Support Ticketing CRM built for the Datastraw AI + Tech Intern assessment. It features a premium iOS-style "liquid glassmorphism" user interface and an intelligent backend powered by Large Language Models.
 
 ## 🌐 Live Demo
-**https://customer-support-ticketing-crm-system-5fhm.onrender.com/**
+web app (Render.com): *https://customer-support-ticketing-crm-system-5fhm.onrender.com/** <br>
+loom video: **https://www.loom.com/share/6df1470bc7bf4b81a617369c30f4a346**
 
 ## ✨ Key Features
 * **AI Auto-Triage:** Automatically reads new support tickets and instantly categorizes their priority (High, Medium, Low) using Groq API (with an OpenRouter fallback).
